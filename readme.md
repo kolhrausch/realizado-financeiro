@@ -1,66 +1,75 @@
-# Automação do Realizado Financeiro
+# Financial Actuals Automation
 
-Ferramenta em Python que automatiza a elaboração do realizado financeiro a partir de extratos bancários.
+🇧🇷 [Leia em português](README.pt-BR.md)
 
-## O problema
+A Python tool that automates the preparation of the financial actuals ("realizado financeiro") from bank statements.
 
-Na rotina atual, é preciso analisar os extratos de diversas empresas, que possuem várias contas em diferentes bancos. Cada entrada e saída precisa ser identificada e classificada de acordo com sua natureza: mútuos entre empresas, matéria-prima, fornecedores, impostos, despesas, transferências, entre outras. Feito à mão, esse processo é lento e sujeito a inconsistências.
+## The problem
 
-## A solução
+Preparing the actuals means going through the statements of several companies, each with multiple accounts at different banks. Every inflow and outflow has to be identified and classified by its nature: intercompany loans, raw materials, suppliers, taxes, expenses, transfers, and so on. Done by hand, this is slow and prone to inconsistencies.
 
-A automação importa um extrato bancário e classifica seus lançamentos com base em um cadastro de naturezas. Quando encontra um histórico novo, pede ao usuário que informe a natureza, e essa classificação passa a valer para as próximas execuções.
+## The solution
 
-Exemplos:
+The tool imports a bank statement and classifies its transactions using a lookup table of known descriptions. When it finds a description it doesn't know, it asks the user for the category, and that choice is remembered for future runs.
 
-- Um PIX entre empresas do grupo é classificado como **Mútuo**;
-- O pagamento a determinado fornecedor é classificado como **Matéria-prima**;
-- Históricos recorrentes são associados automaticamente à sua natureza.
+Examples:
 
-O resultado é um relatório em Excel padronizado, com data, histórico, tipo (débito/crédito), natureza, valor, empresa e banco.
+- A PIX transfer between group companies is classified as **Mutuo** (intercompany loan);
+- A payment to a given supplier is classified as **Materia Prima** (raw material);
+- Recurring descriptions are matched to their category automatically.
 
-## Como funciona
+The output is a standardized Excel report with date, description, debit/credit, category, amount, company and bank.
 
-1. O usuário seleciona o extrato, o banco e a empresa.
-2. O programa lê o extrato e cruza cada histórico com o cadastro de naturezas.
-3. Regras específicas (como a identificação de PIX por CPF/CNPJ) tratam os casos conhecidos.
-4. Para cada histórico sem classificação, uma janela pede a natureza.
-5. As novas classificações são gravadas no cadastro, que fica compartilhado entre os usuários.
-6. O relatório `Realizado <banco> <empresa>.xlsx` é gerado.
+## How it works
 
-## Bancos suportados
+1. The user picks the statement file, the bank and the company.
+2. The program reads the statement and matches each description against the lookup table.
+3. Specific rules (such as identifying PIX transfers by CPF/CNPJ) handle known cases.
+4. For each unclassified description, a window asks for the category.
+5. New classifications are saved to the lookup table, which can be shared across users.
+6. The report `Realizado <bank> <company>.xlsx` is generated.
 
-| Banco     | Status             |
-|-----------|--------------------|
-| Santander | Disponível         |
-| Itaú      | Disponível         |
-| Daycoval  | Disponível         |
+## Supported banks
 
+| Bank      | Status    |
+|-----------|-----------|
+| Santander | Available |
+| Itaú      | Available |
+| Daycoval  | Available |
 
-## Tecnologias
+## Tech stack
 
-Python, pandas, NumPy, tkinter (interface), openpyxl e lxml (leitura de extratos), PyInstaller (geração do executável).
+Python, pandas, NumPy, tkinter (UI), openpyxl and lxml (statement parsing), PyInstaller (executable build).
 
-## Estrutura
+## Project structure
 
 ```
-├── main.py             # fluxo principal
-├── interface.py        # janelas (tkinter)
-├── processamento.py    # leitura dos extratos e regras de classificação
-└── config.py           # listas de bancos, empresas e naturezas
+├── main.py             # main flow
+├── interface.py        # windows (tkinter)
+├── processamento.py    # statement parsing and classification rules
+└── config.py           # lists of banks, companies and categories
 ```
 
-## Como executar
+## Getting started
 
 ```
 pip install pandas numpy openpyxl lxml
 python main.py
 ```
 
-Para gerar o executável (Windows):
+Set `CAMINHO_CADASTRO` in `config.py` to point to the category lookup spreadsheet (a sample `cadastro natureza.xlsx` is included). For team use, point it to a shared network folder. Sample statements for each bank are included in the repository.
+
+To build a Windows executable:
 
 ```
 pip install pyinstaller
-pyinstaller --onefile --name ConciliadorBancario main.py
+pyinstaller --onefile --name ConciliadorBancario --hidden-import lxml --hidden-import openpyxl main.py
 ```
 
+## Data and privacy
 
+This repository contains only fictitious sample data. Real statements, lookup tables, company identifiers and generated reports are not included.
+
+## Status
+
+Work in progress.
